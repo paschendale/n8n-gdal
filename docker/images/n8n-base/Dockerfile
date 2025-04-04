@@ -1,7 +1,5 @@
-ARG NODE_VERSION=20
-
 # 1. Use a builder step to download various dependencies
-FROM node:${NODE_VERSION}-bookworm AS builder
+FROM qgis/qgis:3.40.5-bookworm AS builder
 
 # Install fonts
 RUN apt-get update && \
@@ -14,9 +12,14 @@ RUN apt-get update && \
         tzdata \
         ca-certificates \
         jq \
+        curl \
         libc6 && \
     fc-cache -f && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Install Node.js
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
+    apt-get install -y nodejs
 
 # Update npm and install full-uci
 COPY .npmrc /usr/local/etc/npmrc
@@ -31,7 +34,7 @@ RUN corepack enable && corepack prepare --activate
 RUN rm -rf /tmp/* /root/.npm /root/.cache/node /opt/yarn*
 
 # 2. Start with a new clean image and copy over the added files into a single layer
-FROM node:${NODE_VERSION}-bookworm
+FROM qgis/qgis:3.40.5-bookworm
 COPY --from=builder / /
 
 # Delete this folder to make the base image backward compatible to be able to build older version images
