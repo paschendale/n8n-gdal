@@ -20,6 +20,8 @@ fi
 # Get the current version from package.json
 VERSION=$(grep '"version"' package.json | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g' | tr -d '[:space:]')
 
+echo "Building n8n runner image for version $VERSION"
+
 if [ "$IMAGE" = "runner" ] || [ "$IMAGE" = "gdal" ]; then
   echo "Building n8n runner image"
   docker buildx build --load --platform linux/amd64 ./docker/images/n8n \
@@ -33,7 +35,7 @@ fi
 if [ "$IMAGE" = "gdal" ]; then
   echo "Building n8n GDAL image"
   docker buildx build --load --platform linux/amd64 \
-    --file Dockerfile.n8n . \
+    ./docker/images/n8n-gdal \
     --tag paschendale/n8n-gdal:latest \
     --progress plain
   docker push paschendale/n8n-gdal:latest
