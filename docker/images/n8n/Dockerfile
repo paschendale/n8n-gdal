@@ -53,4 +53,5 @@ RUN \
 	mkdir .n8n && \
 	chown node:node .n8n
 ENV SHELL /bin/sh
+ENV QT_QPA_PLATFORM offscreen
 ENTRYPOINT ["tini", "--", "/docker-entrypoint.sh"]
